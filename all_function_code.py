@@ -1432,15 +1432,18 @@ def _st_extractor() -> CaseExtractor | None:
 
 
 def _st_dataset() -> Dataset:
-    """로컬은 폴더의 엑셀, 엑셀이 없는 곳(클라우드)은 사용자가 올린 엑셀로 데이터셋을 만든다."""
-    if XLSX.exists():
-        return st.cache_resource(show_spinner='엑셀을 읽는 중입니다...')(_load_default_dataset)()
-    uploaded = st.file_uploader('사고관리 엑셀 업로드', type=['xlsx'], key='excel_upload',
-                                help='올린 파일은 이 접속(세션) 동안만 쓰이고 저장소에는 저장되지 않습니다.')
+    """'엑셀 파일 열기'에서 사용자가 고른 엑셀로 데이터셋을 만든다.
+    고르지 않았을 때는 폴더에 기본 엑셀이 있으면 그것을 쓰고(내 PC), 없으면(클라우드) 고르라고 안내하고 멈춘다."""
+    uploaded = st.file_uploader('엑셀 파일 열기 (.xlsx)', type=['xlsx'], key='excel_upload',
+                                help='사고관리 엑셀을 파일 선택 버튼으로 고르거나 이 칸에 끌어다 놓습니다. '
+                                     '고른 파일은 이 접속(세션) 동안만 서버에서 쓰이고 저장소에는 저장되지 않습니다.')
     if uploaded is None:
         if st.session_state.pop('upload_dataset', None) is not None:
-            _st_reset_results()
-        st.info('사고관리 엑셀(.xlsx)을 업로드해 주세요.')
+            _st_reset_source_state()
+        if XLSX.exists():
+            st.caption(f'기본 엑셀({XLSX.name})을 쓰고 있습니다. 다른 엑셀을 쓰려면 위 칸에서 파일을 고르세요.')
+            return st.cache_resource(show_spinner='엑셀을 읽는 중입니다...')(_load_default_dataset)()
+        st.info('위의 "엑셀 파일 열기"에서 사고관리 엑셀(.xlsx)을 선택(업로드)해 주세요.')
         st.stop()
     signature = uploaded.file_id
     cached = st.session_state.get('upload_dataset')
@@ -1450,8 +1453,10 @@ def _st_dataset() -> Dataset:
                 dataset = load_uploaded_dataset(uploaded.getvalue(), uploaded.name, _st_extractor())
         except ExcelFormatError as error:
             st.error(str(error))
+            if XLSX.exists():
+                st.caption('이 파일은 쓸 수 없어 화면을 멈췄습니다. 위 칸에서 파일을 지우면 기본 엑셀로 돌아갑니다.')
             st.stop()
-        _st_reset_results()
+        _st_reset_source_state()
         st.session_state['upload_dataset'] = (signature, dataset)
     return st.session_state['upload_dataset'][1]
 
@@ -1459,6 +1464,15 @@ def _st_dataset() -> Dataset:
 def _st_reset_results() -> None:
     for key in ('q_payload', 'q_result', 'q_extracted', 'q_table', 'q_ppt', 'q_declined'):
         st.session_state.pop(key, None)
+
+
+def _st_reset_source_state() -> None:
+    """데이터 소스(기본 엑셀·고른 엑셀)가 바뀌면 이전 데이터 기준의 조회 결과와 조건 위젯 값(일자·선택 항목·표 편집)을 모두 버린다.
+    남겨 두면 새 엑셀의 일자 범위·선택지를 벗어난 값이 위젯에 남아 화면 오류가 날 수 있다."""
+    _st_reset_results()
+    for key in list(st.session_state.keys()):
+        if key in ('date_range', 'match') or str(key).startswith(('sel_', 'editor_')):
+            st.session_state.pop(key, None)
 
 
 def _st_filters(meta: dict) -> dict | None:

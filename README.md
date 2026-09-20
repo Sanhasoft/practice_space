@@ -5,7 +5,7 @@
 
 ## 사용 방법
 
-1. 앱에 접속해 **사고관리 엑셀(.xlsx)을 업로드**합니다.
+1. 앱에 접속해 화면 맨 위 **엑셀 파일 열기** 칸에서 사고관리 엑셀(.xlsx)을 선택(업로드)합니다. 다른 엑셀을 고르면 조회 조건이 새 파일 기준으로 초기화됩니다.
 2. 사고 일자와 사고유형·재해정도·사고성여부를 고르고 **선택한 조건으로 조회**를 누릅니다.
 3. 추출된 제목·장소·소속·내용을 표에서 확인·수정하고, 문제가 없으면 **PPT 만들기 → 내려받기**를 누릅니다.
 
@@ -49,5 +49,6 @@ python -m streamlit run app.py
 | `all_function_code.py` | 엑셀 변환·조회·LLM 추출·PPT 생성·화면 전체 |
 | `(ref1)AIglue_안전사고사례_PPT마스터슬라이드.pptx` | PPT 아이콘 출처 템플릿 |
 | `scripts/check_no_secrets.py`, `.githooks/pre-commit` | 커밋 전 비밀·데이터 유출 검사 |
+| `scripts/verify_cloud_like.py` | 클라우드와 같은 조건(엑셀·`.env` 없음, Secrets 키)에서 화면 흐름을 검증하는 보조 스크립트 |
 | `.streamlit/config.toml` | 화면 오류 상세 숨김, 업로드 크기 상한 등 |
 | `requirements.txt` | 배포 시 설치할 라이브러리 (테스트한 버전으로 고정) |
