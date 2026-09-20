@@ -1,0 +1,30 @@
+# ===== 비밀: 절대 저장소에 올리지 않는다 (API 키는 Streamlit Secrets에만 넣는다) =====
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+*.pem
+*.key
+
+# ===== 데이터: 엑셀은 앱 화면에서 업로드해서 쓴다 =====
+*.xlsx
+*.xls
+*.xlsm
+*.xlsb
+*.csv
+*.parquet
+*.tmp
+extraction_cache.json
+
+# ===== 작업 기록·산출물 (템플릿 PPT만 예외) =====
+*.ipynb
+*.pdf
+*.pptx
+!(ref1)AIglue_안전사고사례_PPT마스터슬라이드.pptx
+tests/
+
+# ===== 파이썬 =====
+__pycache__/
+*.pyc
+.venv/
+venv/

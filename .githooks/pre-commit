@@ -1,0 +1,4 @@
+#!/bin/sh
+# 커밋 전 비밀·데이터 유출 검사. 설치(한 번만): git config core.hooksPath .githooks
+PY=$(command -v python || command -v python3) || { echo "python을 찾을 수 없어 커밋을 막습니다."; exit 1; }
+exec "$PY" scripts/check_no_secrets.py

@@ -1,0 +1,12 @@
+[client]
+# 화면에 오류 상세(경로·변수·메시지)를 보여주지 않는다. 자세한 내용은 서버 로그에만 남는다.
+showErrorDetails = "none"
+# 방문자에게는 개발자 메뉴(재실행·캐시 삭제 등)를 숨긴다.
+toolbarMode = "viewer"
+
+[server]
+# 엑셀 업로드 상한(MB). 실제 사고관리 엑셀은 약 15MB다.
+maxUploadSize = 30
+
+[browser]
+gatherUsageStats = false
